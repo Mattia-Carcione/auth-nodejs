@@ -7,7 +7,15 @@ import pg from "pg";
 // SETUP BACKEND
 const app = express();
 const port = 3000;
+const db = new pg.Client({
+    user: "postgres",
+    host: "localhost",
+    database: "users",
+    password: "rootroot",
+    port: 5432
+});
 
+db.connect();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 // END SETUP
