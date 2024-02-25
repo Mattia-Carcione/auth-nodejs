@@ -12,11 +12,18 @@
 <body>
     <!-- MAIN SECTION -->
     <main class="container">
-        <h1>Authentication</h1>
-        <div class="d-flex">
-            <button class="btn btn-primary mx-1">Login</button>
-            <button class="btn btn-outline-primary mx-1"><a href="/register" class="nav-link">Register</a></button>
-        </div>
+        <form class="row g-3 col-md-6" action="#" method="post">
+            <div class="mb-3">
+                <label for="emailInput" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp">
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+                <label for="passwordInput" class="form-label">Password</label>
+                <input type="password" class="form-control" id="passwordInput">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
     </main>
     <!-- END MAIN SECTION -->
 

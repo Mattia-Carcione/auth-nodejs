@@ -24,6 +24,10 @@ app.use(express.static("public"));
 app.get("/", (req, res) => {
     res.render("index.ejs");
 });
+
+app.get("/register", (req, res) => {
+    res.render("register.ejs");
+});
 // END ROUTES
 
 // CONFIG SERVER
