@@ -28,6 +28,37 @@ app.get("/", (req, res) => {
 app.get("/register", (req, res) => {
     res.render("register.ejs");
 });
+
+// register new user
+app.post("/register", async (req, res) => {
+    // get the input values
+    const email = req.body.emailInput;
+    const password = req.body.passwordInput;
+
+    // check values are there
+    if (email && password) {
+        try {
+            // check email already exists into db
+            const emailCheck = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+
+            // if email exists send error msg
+            if (emailCheck.rows.length > 0) {
+                res.send("Email already exists. Please, login or sign up with another email.");
+            } else {
+                // else register the new user
+                await db.query("INSERT INTO users (email, password) VALUES ($1, $2)", [email, password]);
+                // res.render or something else
+            }
+        } catch (error) {
+            // catch db error
+            console.error(error);
+            res.sendStatus(500);
+        }
+    } else {
+        // if input values are empty send error status
+        res.status(417).send("Expectation Failed");
+    }
+});
 // END ROUTES
 
 // CONFIG SERVER
