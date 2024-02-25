@@ -25,6 +25,6 @@ nodemon index.js
 
 ## Informazioni sull'autenticazione di 1 livello
 
-### l'autenticazione di 1 livello si basa sulla registrazione dell'utente
-### semplicemente tramite email e password che vengono archiviati in un db
-### senza l'encrypting della password
+l'autenticazione di 1 livello si basa sulla registrazione dell'utente
+semplicemente tramite email e password che vengono archiviati in un db
+senza l'encrypting della password.
