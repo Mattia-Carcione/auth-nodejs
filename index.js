@@ -25,6 +25,7 @@ app.get("/", (req, res) => {
     res.render("index.ejs");
 });
 
+// register
 app.get("/register", (req, res) => {
     res.render("register.ejs");
 });
@@ -34,7 +35,7 @@ app.post("/register", async (req, res) => {
     // get the input values
     const email = req.body.emailInput;
     const password = req.body.passwordInput;
-
+    console.log(email, password);
     // check values are there
     if (email && password) {
         try {
