@@ -37,7 +37,7 @@ L'hashing è un livello di sicurezza in più, in quanto è quasi impossibile rip
 e consiste nel inserire alla password il "salt", ovvero una sequenza di caratteri che viene generata casualmente e inserita prima di fare l'hash.
 Successivamente si applica la funzione di hashing, che prende la stringa di password e salt 
 e la codifica in una sequenza di caratteri a lunghezza impostata che viene poi memorizzata nel db.
-L'hashing è casuale e non è uguale ogni volta per la stessa password, in quanto il salt generato è casuale ogni volta.
+L'hashing è casuale e non è uguale ogni volta per la stessa password, in quanto il salt generato è casuale ogni volta. Inoltre, l'hashing viene eseguito più volte sulla stessa password, aggiungendo ad ogni codifica il salt: si parla infatti di salt rounds, ovvero ciclare l'hashing più volte sulla stessa password.
 Per rendere ancora più sicuro l'hash, la password deve avere alcune caratteristiche come:
 - lunghezza min 8 caratteri
 - almeno una lettera maiuscola
