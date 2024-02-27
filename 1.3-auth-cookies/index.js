@@ -35,7 +35,10 @@ app.use(express.static("public"));
 app.use(session({
     secret: "PASSWORD", /* setting your secret password */
     resave: false, /* don't store session in the db */
-    saveUninitialized: true /* store session in the server memory */
+    saveUninitialized: true, /* store session in the server memory */
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 /* set the time of cookies session */
+    }
 }));
 
 app.use(passport.initialize()); /* initializing session cookies */

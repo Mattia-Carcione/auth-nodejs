@@ -20,6 +20,9 @@ app.use(session({
     secret: "PASSWORD", /* setting your secret password */
     resave: false, /* if false don't store session in the db */
     saveUninitialized: true /* store session in the server memory */
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 /* set the time of cookies session */
+    }
 }));
 
 app.use(passport.initialize()); /* initializing cookies session */
