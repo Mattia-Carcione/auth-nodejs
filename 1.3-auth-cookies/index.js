@@ -83,9 +83,12 @@ app.post("/register", async (req, res) => {
                     // Print error if exists
                     if (err) return console.error("error hashing password: ", err);
                     // else register the new user
-                    await db.query("INSERT INTO users (email, password) VALUES ($1, $2)", [email, hash]);
-                    // res.render or something else
-                    res.render("/secrets");
+                    const result = await db.query("INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *", [email, hash]);
+                    const user = result.rows[0];
+                    req.login(user, (err) => {
+                        if (err) return console.error(err);
+                        res.redirect("/secrets");
+                      });
                 });
                 /* END HASHING PASSWORD */
             }
