@@ -21,7 +21,7 @@ app.use(session({
     resave: false, /* if false don't store session in the db */
     saveUninitialized: true /* store session in the server memory */
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 /* set the time of cookies session */
+        maxAge: 1000 * 60 * 60 * 24 /* set the time of cookies session (ms * sec * min * h) */
     }
 }));
 
