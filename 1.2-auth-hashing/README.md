@@ -14,7 +14,7 @@ import bcrypt from "bcrypt";
 
 ### Setting salt rounds
 ````
-const saltRounds = x; <!-- x = number of rounds, for example 10 -->
+const saltRounds = 10; 
 ````
 
 ### Hashing with bcrypt in the registration method
