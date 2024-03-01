@@ -18,7 +18,9 @@ import env from "dotenv";
 env.config();
 /* END SETTING ENV */
 
+// IMPORT GOOGLE DEPENDENCIES
 import GoogleStrategy from "passport-google-oauth2";
+// END IMPORT GOOGLE DEPENDENCIES
 
 /* SETTING SALT ROUNDS */
 const saltRounds = 10;
@@ -65,6 +67,7 @@ app.get("/secrets", (req, res) => {
     res.redirect("login");
 });
 
+// GOOGLE ROUTES
 app.get('/auth/google',
   passport.authenticate('google', { scope:
       [ 'email', 'profile' ] }
@@ -75,6 +78,7 @@ app.get( '/auth/google/secrets',
         successRedirect: '/secrets',
         failureRedirect: '/login'
 }));
+// END GOOGLE ROUTES
 
 // register
 app.get("/register", (req, res) => {
