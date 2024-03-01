@@ -12,19 +12,20 @@ import passport from "passport";
 import { Strategy } from "passport-local";
 /* END IMPORT COOKIES DEPENDENCIES */
 
-/* SETTING SALT ROUNDS */
-const saltRounds = 10;
-
-// SETUP BACKEND
-const app = express();
-const port = 3000;
-
 /* SETTING ENV */
 import env from "dotenv";
 
 env.config();
 /* END SETTING ENV */
 
+import GoogleStrategy from "passport-google-oauth2";
+
+/* SETTING SALT ROUNDS */
+const saltRounds = 10;
+
+// SETUP BACKEND
+const app = express();
+const port = 3000;
 const db = new pg.Client({
     user: process.env.PG_USER,
     host: process.env.PG_HOST,
@@ -64,6 +65,17 @@ app.get("/secrets", (req, res) => {
     res.redirect("login");
 });
 
+app.get('/auth/google',
+  passport.authenticate('google', { scope:
+      [ 'email', 'profile' ] }
+));
+
+app.get( '/auth/google/secrets',
+    passport.authenticate( 'google', {
+        successRedirect: '/secrets',
+        failureRedirect: '/login'
+}));
+
 // register
 app.get("/register", (req, res) => {
     res.render("register.ejs");
@@ -95,7 +107,7 @@ app.post("/register", async (req, res) => {
                     req.login(user, (err) => {
                         if (err) return console.error(err);
                         res.redirect("/secrets");
-                      });
+                    });
                 });
                 /* END HASHING PASSWORD */
             }
@@ -120,42 +132,69 @@ app.post("/login", passport.authenticate("local", {
     successRedirect: "/secrets",
     failureRedirect: "/login"
 }));
+
+app.get("/logout", (req, res) => {
+    req.logout((err) => {
+        if (err) return console.error(err);
+        res.redirect("/");
+    })
+})
 // END ROUTES
 
 /* MIDDLEWARE FOR LOGIN */
 passport.use(new Strategy(async function verify(username, password, cb) {
-        try {
-            // check email exists
-            const emailCheck = await db.query("SELECT * FROM users WHERE email = $1", [username]);
-            if (emailCheck.rows.length > 0) {
-                // save user's credentials
-                const user = emailCheck.rows[0];
+    try {
+        // check email exists
+        const emailCheck = await db.query("SELECT * FROM users WHERE email = $1", [username]);
+        if (emailCheck.rows.length > 0) {
+            // save user's credentials
+            const user = emailCheck.rows[0];
 
-                /* COMPARING PASSWORD FROM INPUT TO STORED PASSWORD */
-                bcrypt.compare(password, user.password, (err, result) => {
-                    /* CHECK FOR ERROR  */
-                    if (err) return cb(err);
-                    /* CHECK IF COMPARE IS TRUE */
-                    if (result) {
-                        return cb(null, user);
-                    } else {
-                        // SET TO FALSE THE AUTHENTICATION
-                        return cb(null, false);
-                    }
-                });
-                /* END COMPARING PASSWORD */
+            /* COMPARING PASSWORD FROM INPUT TO STORED PASSWORD */
+            bcrypt.compare(password, user.password, (err, result) => {
+                /* CHECK FOR ERROR  */
+                if (err) return cb(err);
+                /* CHECK IF COMPARE IS TRUE */
+                if (result) {
+                    return cb(null, user);
+                } else {
+                    // SET TO FALSE THE AUTHENTICATION
+                    return cb(null, false);
+                }
+            });
+            /* END COMPARING PASSWORD */
 
-            } else {
-                // send error msg if the email doesn't exists
-                return cb("User not found.");
-            }
-        } catch (error) {
-            // catch error db and send error msg
-            console.error(error);
-            res.sendStatus(500);
+        } else {
+            // send error msg if the email doesn't exists
+            return cb("User not found.");
         }
+    } catch (error) {
+        // catch error db and send error msg
+        console.error(error);
+        res.sendStatus(500);
+    }
 }));
 /* END MIDDLEWARE */
+
+passport.use("google", new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL,
+    userProfileURL: process.env.GOOGLE_PROFILE_URL,
+}, async function (accessToken, refreshToken, profile, cb) {
+    try {
+        const result = await db.query("SELECT * FROM users WHERE email = $1", [profile.email]);
+        if (result.rows.length === 0) {
+            const newUser = await db.query("INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *", [profile.email, "google"]);
+            cb(null, newUser.rows[0]);
+        } else {
+            cb(null, result.rows[0]);
+        }
+    } catch (error) {
+        cb(error);
+    }
+}
+));
 
 /* SAVING DATA OF USER INTO SESSION */
 passport.serializeUser((user, cb) => {
